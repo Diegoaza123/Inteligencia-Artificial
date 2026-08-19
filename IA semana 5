@@ -1,0 +1,50 @@
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+
+SEED = 8
+random.seed(SEED)
+np.random.seed(SEED)
+
+
+def euclidean(a, b):
+    return ((a[0]-b[0])**2 + (a[1]-b[1])**2) ** 0.5
+
+
+def total_cost(houses, hospitals):
+    return sum(min(euclidean(house, hospital) for hospital in hospitals)
+               for house in houses)
+
+
+def plot_state(height, width, houses, hospitals, title=None):
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.set_xlim(-0.5, width - 0.5)
+    ax.set_ylim(height - 0.5, -0.5)
+    ax.set_xticks(range(width))
+    ax.set_yticks(range(height))
+    ax.grid(True)
+
+    if houses:
+        hr, hc = zip(*houses)
+        ax.scatter(hc, hr, marker='s', s=110, label='Casas')
+    if hospitals:
+        rr, cc = zip(*hospitals)
+        ax.scatter(cc, rr, marker='P', s=180, label='Hospitales')
+
+    ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1))
+    ax.set_title(title or f'Costo = {total_cost(houses, hospitals)}')
+    plt.tight_layout()
+    plt.show()
+     
+
+HEIGHT, WIDTH = 10, 16
+NUM_HOUSES = 18
+NUM_HOSPITALS = 3
+
+all_cells = [(r, c) for r in range(HEIGHT) for c in range(WIDTH)]
+houses = set(random.sample(all_cells, NUM_HOUSES))
+available = list(set(all_cells) - houses)
+initial_hospitals = set(random.sample(available, NUM_HOSPITALS))
+
+plot_state(HEIGHT, WIDTH, houses, initial_hospitals,
+           title=f'Estado inicial — costo {total_cost(houses, initial_hospitals)}')
